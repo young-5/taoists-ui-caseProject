@@ -1,4 +1,54 @@
-#!/bin/sh
+#!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# npm run prettier-format && npm run lint
+# commit 代码校验与格式化
+
+STAGE_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.tsx' '*.ts')
+# if test ${#STAGE_FILES} -gt 0; then
+#     echo '开始eslint检查'
+
+#     which eslint &
+#     >/dev/null
+#     if [[ "$?" == 1 ]]; then
+#         echo '没安装eslint'
+#         exit 1
+#     fi
+
+#     PASS=true
+
+#     for FILE in $STAGE_FILES; do
+#         eslint $FILE
+#         if [[ "$?" == 1 ]]; then
+#             PASS=false
+#         fi
+#     done
+
+#     if ! $PASS; then
+#         echo "eslint检查没通过！"
+#         exit 1
+#     else
+#         echo "eslint检查完毕"
+#     fi
+
+# else
+#     echo '没有js文件需要检查'
+# fi
+
+if test ${#STAGE_FILES} -gt 0; then
+    echo '开始代码格式检查与修正'
+    for FILE in $STAGE_FILES; do
+        if test -f "$FILE"; then
+            echo "$FILE exist"
+            npx prettier --write $FILE
+        fi
+        if [[ "$?" == 1 ]]; then
+            PASS=false
+        fi
+    done
+    echo "代码格式化检查完毕"
+
+else
+    echo '没有js或者json文件需要检查'
+fi
+
+exit 0

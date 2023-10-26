@@ -32,14 +32,13 @@
    1. eslint
    2. prettierrc
    3. tsconfig
-   4. husky
+   4. husky：pre-commit/commit-msg
    5. commitlint.config
 
 3. less/sass支持
 
    sass-loader
 
-   
 4. antd 支持
 
 ## rollup 打包构建
