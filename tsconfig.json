@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "outDir": "dist",
+    "module": "esnext",
+    "target": "ES5",
+    "lib": ["es2019", "DOM"],
+    "declaration": true,
+    "declarationDir": "dist/esm/types",
+    "emitDeclarationOnly": false,
+    "jsx": "react",
+    "allowJs": false,
+    "checkJs": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true, // 不允许把null、undefined赋值给其他类型的变量
+    "noUnusedLocals": true // 检查只声明、未使用的局部变量(只提示不报错)
+  },
+  "include": ["src", "src/components/**/*.tsx", "src/components/**/*.ts"],
+  "exclude": ["node_modules", "src/components/**/*.spec.(ts|tsx)", "dist"]
+}
