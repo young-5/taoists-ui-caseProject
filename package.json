@@ -12,7 +12,8 @@
     "prepare": "husky install",
     "lint": "npx eslint src/**/*.{ts,tsx}",
     "lint-fix": "npx eslint src/**/*.{ts,tsx} --fix",
-    "prettier-format": "prettier --write src/components/**/*.{ts,tsx}"
+    "prettier-format": "prettier --write src/components/**/*.{ts,tsx}",
+    "prepar": "husky install"
   },
   "author": "",
   "license": "ISC",
