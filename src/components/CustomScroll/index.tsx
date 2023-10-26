@@ -1,20 +1,20 @@
-import * as React from 'react'
-import { useEffect, useState, useRef } from 'react'
 import cl from 'classnames'
+import * as React from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './index.scss'
 
 interface CustomScrollProps {
   className?: string
   style?: any
   onScroll?: any
-  children?: React.ReactNode
+  children?: React.ReactNode | JSX.Element
   toTop?: any
   id?: string
 }
 
 const CustomScroll: React.FC<CustomScrollProps> = (props) => {
   const { className, onScroll, style = {}, toTop, children, id } = props
-  const scorllRef = useRef(null)
+  const scorllRef = useRef<HTMLDivElement>(null)
   const timeRef = useRef<any>(null)
   const [isScorll, setIsScroll] = useState<boolean>(false)
   const customScroll = (ev: any) => {
@@ -27,7 +27,7 @@ const CustomScroll: React.FC<CustomScrollProps> = (props) => {
   }
   useEffect(() => {
     if (scorllRef.current) {
-      scorllRef.current.scrollTop = '0px'
+      ;(scorllRef.current as any).scrollTop = '0px'
     }
   }, [toTop])
   useEffect(() => {

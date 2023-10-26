@@ -46,9 +46,9 @@ if test ${#STAGE_FILES} -gt 0; then
         fi
     done
     echo "代码格式化检查完毕"
-
+    git add .
 else
-    echo '没有js或者json文件需要检查'
+    echo '没有ts或者tsx文件需要检查'
 fi
 
 exit 0

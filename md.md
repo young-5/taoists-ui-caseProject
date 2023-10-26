@@ -45,4 +45,36 @@
 
     npm i -D rollup
 
-    npm i -D @rollup/plugin-node-resolve @rollup/plugin-commonjs rollup-plugin-typescript2 rollup-plugin-peer-deps-external rollup-plugin-postcss rollup-plugin-terser rollup-plugin-dts
+    npm i -D @rollup/plugin-node-resolve @rollup/plugin-commonjs rollup-plugin-typescript2 rollup-plugin-peer-deps-external rollup-plugin-postcss @rollup/plugin-terser rollup-plugin-dts
+
+      npm i -D rimraf
+
+     npm i -D @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript
+
+### 插件
+
+1.  @rollup/plugin-node-resolve- 解决第三方依赖node_modules
+1.  @rollup/plugin-commonjs- 打包成commonjs格式
+1.  rollup-plugin-typescript2 在 JS 中转译我们的 1.Typescript 代码
+1.  rollup-plugin-peer-deps-external- 防止打包peerDependencies external将不用配置。
+1.  rollup-plugin-postcss- 处理我们的 less scss ,autoprefixer加前缀 cssnano ：css压缩
+1.  @rollup/plugin-terser - 缩小我们的包
+1.  rollup-plugin-dts - 它获取我们所有的.d.ts文件并输出一个单一类型的文件
+1.  @rollup/plugin-babel
+1.  @rollup/plugin-alias 别名
+1.  @rollup/plugin-inject 全局变量
+1.  @rollup/plugin-replace 字符串替换
+1.  @rollup/plugin-strip 删除console debugger
+
+1.  rimraf 打包前删除文件夹
+
+### rollup配置
+
+1. input 入口
+1. external 忽略包
+1. globals
+1. output 出口
+   1. file
+   2. format
+   3. sourcemap
+1. plugins 插件

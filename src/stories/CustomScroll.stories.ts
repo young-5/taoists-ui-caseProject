@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Y5CustomScroll } from './CustomScroll'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
-const meta = {
+const meta: any = {
   title: 'Example/Y5CustomScroll',
   component: Y5CustomScroll,
   parameters: {

@@ -1,6 +1,6 @@
+import { Table } from 'antd'
 import * as React from 'react'
 import { useCallback, useEffect, useReducer } from 'react'
-import { Table } from 'antd'
 
 interface ItableProps {
   baseProps?: any

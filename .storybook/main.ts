@@ -1,5 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-webpack5'
-const path = require('path')
+import path from 'path'
 const config: StorybookConfig = {
   //使用scss,使用前记得安装对应的loader
   webpackFinal: async (config, { configType }) => {
