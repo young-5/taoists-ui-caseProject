@@ -9,8 +9,6 @@
     "module": "esnext",
     "target": "ES5",
     "lib": ["es2019", "DOM"],
-    "declaration": true,
-    "declarationDir": "dist/esm/types",
     "emitDeclarationOnly": false,
     "jsx": "react",
     "allowJs": false,
@@ -22,5 +20,5 @@
     "noUnusedLocals": true // 检查只声明、未使用的局部变量(只提示不报错)
   },
   "include": ["src", "src/components/**/*.tsx", "src/components/**/*.ts"],
-  "exclude": ["node_modules", "src/components/**/*.spec.(ts|tsx)", "dist"]
+  "exclude": ["node_modules", "src/components/**/*.stories.(ts|tsx)", "dist"]
 }

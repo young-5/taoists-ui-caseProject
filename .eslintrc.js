@@ -18,6 +18,8 @@ module.exports = {
       },
       files: ['.eslintrc.{js,cjs}'],
       parserOptions: {
+        project: resolve('./tsconfig.json'),
+        tsconfigRootDir: resolve('./'),
         sourceType: 'script'
       }
     }
