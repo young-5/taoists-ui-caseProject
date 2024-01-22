@@ -8,8 +8,9 @@ import './CustomScroll.less'
 export const Y5CustomScroll = () => {
   return (
     <CustomScroll className={'ppp'}>
-      111
+      <div>header</div>
       <div className={'children'}></div>
+      <div>footer</div>
     </CustomScroll>
   )
 }

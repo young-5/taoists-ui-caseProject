@@ -1,27 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Y5CustomScroll } from './CustomScroll'
+import { Y5MemberSelector } from './MemberSelector'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: any = {
-  title: 'Example/Y5CustomScroll',
-  component: Y5CustomScroll,
+  title: 'Example/Y5MemberSelector',
+  component: Y5MemberSelector,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'centered'
   },
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/react/writing-docs/autodocs
   tags: ['autodocs']
-} satisfies Meta<typeof Y5CustomScroll>
+} satisfies Meta<typeof Y5MemberSelector>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
-  args: {
-    onScroll: () => {},
-    toTop: true,
-    className: '',
-    style: {}
-  }
+  args: {}
 }

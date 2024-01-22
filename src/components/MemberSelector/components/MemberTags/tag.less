@@ -1,0 +1,23 @@
+.member-tag {
+  height: 24px;
+  line-height: 24px;
+  width: 120px;
+  text-align: left;
+  margin-left: 8px;
+  background-color: rgb(220, 237, 245);
+  border-radius: 6px;
+  position: relative;
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 25%;
+    width: 2px;
+    background-color: blue;
+    height: 50%;
+  }
+  span {
+    display: inline-block;
+    padding-left: 6px;
+  }
+}
