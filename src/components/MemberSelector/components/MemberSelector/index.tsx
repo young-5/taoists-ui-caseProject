@@ -38,6 +38,10 @@ const MemberSelector: FC<MemberSelector> = (props) => {
   }
   const clearSelect = () => {
     setSelectedMember([])
+    setCheckedOrgs([])
+  }
+  const checkedMembersChange = (member: Member[]) => {
+    setSelectedMember(member)
   }
 
   const selectedOrgChange = (org: Org) => {
@@ -45,12 +49,12 @@ const MemberSelector: FC<MemberSelector> = (props) => {
   }
 
   const checkedOrgsChange = (orgs: Org[]) => {
-    debugger
     setCheckedOrgs(orgs)
   }
   const SekectMemberProvider = {
     members: selectedMember,
     clearSelect,
+    checkedMembersChange,
     selectedOrgChange,
     selectedOrg,
     checkedOrgsChange,

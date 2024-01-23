@@ -8,6 +8,9 @@
   border-radius: 6px;
   position: relative;
   margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   &::before {
     content: '';
     display: block;
@@ -17,9 +20,14 @@
     background-color: blue;
     height: 50%;
   }
-  span {
-    display: inline-block;
+  .span {
     padding-left: 6px;
+  }
+  span {
+    display: block;
     font-size: 13px;
   }
+}
+.org-tag {
+  background-color: rgb(236, 242, 191);
 }

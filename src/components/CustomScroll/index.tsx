@@ -1,7 +1,7 @@
 import cl from 'classnames'
 import * as React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import './index.scss'
+import './index.less'
 
 interface CustomScrollProps {
   className?: string

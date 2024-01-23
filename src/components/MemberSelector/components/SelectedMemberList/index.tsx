@@ -7,8 +7,10 @@ interface SelectedMemberList {}
 const SelectedMemberList: FC<SelectedMemberList> = () => {
   const selectedMemberContext = useContext(SelectedMemberContext)
   const allMerber: any = useMemo(() => {
-    return [...selectedMemberContext.members, ...(selectedMemberContext?.checkedOrgs || [])]
+    let checked = selectedMemberContext?.checkedOrgs?.map((v) => ({ ...v, membertType: 1 })) || []
+    return [...checked, ...selectedMemberContext.members]
   }, [selectedMemberContext.members, selectedMemberContext.checkedOrgs])
+
   return (
     <div className="selected-member-container">
       <div className="tags-hearder">
@@ -24,7 +26,7 @@ const SelectedMemberList: FC<SelectedMemberList> = () => {
       </div>
       <div className="member-tags">
         {allMerber.map((member) => {
-          return <Tag member={allMerber} key={member.id} />
+          return <Tag member={member} key={member.id} />
         })}
       </div>
     </div>

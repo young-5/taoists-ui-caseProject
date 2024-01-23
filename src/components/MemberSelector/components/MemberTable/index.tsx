@@ -1,6 +1,6 @@
 import type { TableColumnsType } from 'antd'
 import { Table } from 'antd'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
 import { Member } from '../../type'
 
@@ -56,7 +56,19 @@ const MemberTable: React.FC<MemberTable> = (props) => {
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
-      changeChecked(selectedRows as unknown as Member[])
+      const prveCheckedMember = selectedMemberContext.members.filter((v) => {
+        if (
+          !dataSource.find((m) => m.id === v.id) ||
+          (dataSource.find((m) => m.id === v.id) && selectedRowKeys.find((m) => m === v.id))
+        ) {
+          return true
+        }
+      })
+      const newCheckedMember = selectedRows.filter(
+        (v) => !selectedMemberContext.members.find((m) => m.id === v.id)
+      )
+      const allCheckedMember = [...prveCheckedMember, ...newCheckedMember]
+      changeChecked(allCheckedMember as unknown as Member[])
     },
     getCheckboxProps: (record: DataType) => ({
       disabled: record.name === 'Disabled User',
