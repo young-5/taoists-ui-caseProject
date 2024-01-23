@@ -14,7 +14,7 @@ interface MemberSelector {
 const MemberSelector: FC<MemberSelector> = (props) => {
   const { title, initMembers = [] } = props
   return (
-    <Modal title={title} open={true}>
+    <Modal title={title} open={true} width={1200}>
       <MemberSelect initMembers={initMembers} />
     </Modal>
   )

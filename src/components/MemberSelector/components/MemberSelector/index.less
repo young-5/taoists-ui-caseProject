@@ -4,20 +4,42 @@
     border-radius: 4px;
     border-bottom: 1px solid #eee;
   }
-  .member-selector-box-search {
-  }
+
   .member-selector-box-container {
     display: flex;
-    .org-tree {
-      width: 200px;
-      border-right: 1px solid #eee;
+    .member-select {
+      width: 60%;
+      .member-select-search {
+        padding: 12px 0;
+        width: 100%;
+      }
+      .member-org {
+        width: 100%;
+        display: flex;
+        .search-member-list {
+          width: 100%;
+          padding: 0 24px;
+        }
+        .org-tree {
+          width: 50%;
+          border-right: 1px solid #eee;
+          height: 100%;
+          overflow-y: auto;
+          height: 400px;
+        }
+        .org-members {
+          width: 50%;
+          padding: 0 12px;
+          overflow-y: auto;
+          height: 400px;
+        }
+      }
     }
-    .org-members {
-      width: 200px;
-      border-right: 1px solid #eee;
-    }
+
     .select-member {
       flex: 1;
+      border-left: 1px solid #eee;
+      padding: 18px 24px;
     }
   }
 }
