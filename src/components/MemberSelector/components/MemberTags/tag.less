@@ -1,16 +1,15 @@
 .member-tag {
   height: 24px;
   line-height: 24px;
-  width: 120px;
   text-align: left;
   margin-left: 8px;
   background-color: rgb(220, 237, 245);
   border-radius: 6px;
   position: relative;
   margin-bottom: 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: flex;
+  padding: 0 6px;
+
   &::before {
     content: '';
     display: block;
@@ -20,17 +19,25 @@
     background-color: blue;
     height: 50%;
   }
-  .span {
-    padding-left: 6px;
-  }
-  span {
-    display: block;
-    font-size: 13px;
+  .tag-text {
+    display: flex;
+    align-items: center;
+    .icon {
+      text-align: right;
+      margin-right: 12px;
+    }
+    .span {
+      text-align: left;
+      display: block;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100px;
+      padding: 0 6px;
+    }
   }
   .del {
-    position: absolute;
-    right: 5px;
-    top: 0;
     cursor: pointer;
     &:hover {
       color: blue;
@@ -39,4 +46,7 @@
 }
 .org-tag {
   background-color: rgb(236, 242, 191);
+  &::before {
+    background-color: rgb(247, 216, 38);
+  }
 }

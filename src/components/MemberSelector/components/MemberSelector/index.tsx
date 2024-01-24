@@ -47,11 +47,13 @@ const MemberSelector = (props: MemberSelector, ref) => {
   }
 
   const checkedOrgsChange = (orgs: Org[]) => {
-    setCheckedOrgs(orgs)
+    // 排除 已选择的部门成员
+    let newOrgs = orgs.filter((v) => !initMembers.find((m) => m.id === v.key))
+    setCheckedOrgs(newOrgs)
   }
   const onDel = (member: IMember) => {
     if (member.membertType === 1) {
-      let newMember = checkedOrgs.filter((v) => member.id !== v.id)
+      let newMember = checkedOrgs.filter((v) => member.key !== v.key)
       checkedOrgsChange(newMember)
     } else {
       let newMember = selectedMember.filter((v) => member.id !== v.id)

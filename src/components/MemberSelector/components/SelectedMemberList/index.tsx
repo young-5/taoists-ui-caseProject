@@ -29,7 +29,7 @@ const SelectedMemberList: FC<SelectedMemberList> = ({ onDel }) => {
       </div>
       <div className="member-tags">
         {allMerber.map((member) => {
-          return <Tag member={member} key={member.id} isDel={true} onDel={onDel} />
+          return <Tag member={member} key={member.id} isDel={true} onDel={onDel} isEdit={true} />
         })}
       </div>
     </div>

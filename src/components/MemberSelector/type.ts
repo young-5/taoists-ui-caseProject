@@ -15,6 +15,7 @@ export interface Org {
   title: string
   key: string
   membertType?: string | number
+  pid: string
 }
 
 export enum SEARCH_MEMBER_TYPE {

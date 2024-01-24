@@ -13,8 +13,8 @@ export const Y5MemberSelector = () => {
     return new Promise((res, rej) => {
       const initTreeData: any[] = key
         ? [
-            { title: `子机构 ${key}-0`, key: `${key}-0` },
-            { title: `子机构 ${key}-1`, key: `${key}-1` }
+            { title: `子机构 ${key}-0`, key: `${key}-0`, pid: key + '' },
+            { title: `子机构 ${key}-1`, key: `${key}-1`, pid: key + '' }
           ]
         : [
             { title: '机构 j0', key: 'j0' },
@@ -57,16 +57,20 @@ export const Y5MemberSelector = () => {
     return new Promise((res, rej) => {
       return res([
         {
-          id: 'j1',
-          name: `机构1${key}`
+          key: 'j1',
+          title: `机构1${key}`,
+          membertType: 1
         },
         {
-          id: 'j2',
-          name: '机构2'
+          key: 'j2',
+          title: '机构2',
+          membertType: 1
         },
         {
-          id: 'j1-1',
-          name: '子机构ji-1'
+          key: 'j1-1',
+          title: '子机构ji-1',
+          membertType: 1,
+          pid: 'j1'
         }
       ])
     })
@@ -106,7 +110,7 @@ export const Y5MemberSelector = () => {
       </Button>
       <MemberSelector
         title={'成员添加'}
-        open={open}
+        open={true}
         onSubmit={onSubmit}
         onCancel={() => {
           setOpen(false)
@@ -114,8 +118,8 @@ export const Y5MemberSelector = () => {
         initMembers={[
           { id: 'u1', name: 'John Brown' },
           {
-            id: 'j2',
-            name: '机构2',
+            id: 'j1',
+            name: '机构1',
             membertType: 1
           },
           {
