@@ -35,7 +35,7 @@ const SearchBox: FC<SearchBoxProps> = (props) => {
         <Input.Search
           className="search-member-input"
           allowClear
-          placeholder={type === SEARCH_MEMBER_TYPE.USER ? '请选择用户ID或名称' : '请输入组织名称'}
+          placeholder={type === SEARCH_MEMBER_TYPE.USER ? '请选择用户ID或名称' : '请输入部门名称'}
         />
       </Form.Item>
     </Form>

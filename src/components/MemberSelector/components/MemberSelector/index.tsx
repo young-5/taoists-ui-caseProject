@@ -1,7 +1,7 @@
 import { Form } from 'antd'
-import React, { FC, useEffect, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
-import { Member, Org, SEARCH_MEMBER_TYPE, SearchPamas } from '../../type'
+import { IMember, IMember as Member, Org, SEARCH_MEMBER_TYPE, SearchPamas } from '../../type'
 import MemberTable from '../MemberTable'
 import MemberTags from '../MemberTags/index'
 import OrgTree from '../OrgTree'
@@ -13,32 +13,30 @@ import './index.less'
 interface MemberSelector {
   initMembers: Member[] // 已经选择的成员
   onSubmit?: (data: Member[]) => void //提交
-  // 获取组织接口
+  // 获取部门接口
+  fetchOrgs?: any
   // 获取用户接口
-  // 查询组织接口
+  fetchUsers?: any
+  // 查询部门接口
+  fetchSearchOrgs?: any
   // 查询用户接口
+  fetchSearchUsers?: any
 }
 
-const MemberSelector: FC<MemberSelector> = (props) => {
-  const { initMembers } = props
+const MemberSelector = (props: MemberSelector, ref) => {
+  const { initMembers, fetchOrgs, fetchUsers, fetchSearchOrgs, fetchSearchUsers } = props
   const [form] = Form.useForm()
-  const [searchPamas, setSearchPamas] = useState<SearchPamas>()
-  const [selectedMember, setSelectedMember] = useState<Member[]>([])
-  const [selectedOrg, setSelectedOrg] = useState<Org>()
-  const [checkedOrgs, setCheckedOrgs] = useState<Org[]>()
+  const [searchPamas, setSearchPamas] = useState<SearchPamas>() // 查询条件
+  const [selectedMember, setSelectedMember] = useState<Member[]>([]) // 新选择的用户
+  const [selectedOrg, setSelectedOrg] = useState<Org>() // 点击切换的部门
+  const [checkedOrgs, setCheckedOrgs] = useState<Org[]>([]) // 选择的部门
+
+  useImperativeHandle(ref, () => ({
+    allSelectedMember: [...checkedOrgs, ...selectedMember]
+  }))
+
   const searchSubmit = (val: SearchPamas) => {
-    console.log(val)
     setSearchPamas(val)
-  }
-  useEffect(() => {
-    console.log('更新')
-  }, [searchPamas])
-  const selectedMemberChange = (values: Member[]) => {
-    setSelectedMember(values)
-  }
-  const clearSelect = () => {
-    setSelectedMember([])
-    setCheckedOrgs([])
   }
   const checkedMembersChange = (member: Member[]) => {
     setSelectedMember(member)
@@ -51,18 +49,36 @@ const MemberSelector: FC<MemberSelector> = (props) => {
   const checkedOrgsChange = (orgs: Org[]) => {
     setCheckedOrgs(orgs)
   }
+  const onDel = (member: IMember) => {
+    if (member.membertType === 1) {
+      let newMember = checkedOrgs.filter((v) => member.id !== v.id)
+      checkedOrgsChange(newMember)
+    } else {
+      let newMember = selectedMember.filter((v) => member.id !== v.id)
+      checkedMembersChange(newMember)
+    }
+  }
+  const clearSelect = () => {
+    setSelectedMember([])
+    setCheckedOrgs([])
+  }
+
   const SekectMemberProvider = {
+    initMembers,
     members: selectedMember,
     clearSelect,
     checkedMembersChange,
     selectedOrgChange,
     selectedOrg,
     checkedOrgsChange,
-    checkedOrgs
+    checkedOrgs,
+    fetchOrgs: fetchOrgs,
+    fetchUsers: fetchUsers,
+    fetchSearchOrgs: fetchSearchOrgs,
+    fetchSearchUsers: fetchSearchUsers,
+    searchPamas
   }
-  const isSearch = () => {
-    return searchPamas?.searchVal
-  }
+
   return (
     <SelectedMemberContext.Provider value={SekectMemberProvider}>
       <div className="member-selector-box">
@@ -75,7 +91,7 @@ const MemberSelector: FC<MemberSelector> = (props) => {
               <SearchBox form={form} submit={searchSubmit} />
             </div>
             <div className="member-org">
-              {isSearch() ? (
+              {searchPamas?.searchVal ? (
                 <div className="search-member-list">
                   <SearchMemberTable />
                 </div>
@@ -85,14 +101,14 @@ const MemberSelector: FC<MemberSelector> = (props) => {
                     <OrgTree isCheck={searchPamas?.searchType === SEARCH_MEMBER_TYPE.ORG} />
                   </div>
                   <div className="org-members">
-                    <MemberTable changeChecked={selectedMemberChange} />
+                    <MemberTable changeChecked={checkedMembersChange} />
                   </div>
                 </>
               )}
             </div>
           </div>
           <div className="select-member">
-            <SelectedMemberList />
+            <SelectedMemberList onDel={onDel} />
           </div>
         </div>
       </div>
@@ -100,4 +116,4 @@ const MemberSelector: FC<MemberSelector> = (props) => {
   )
 }
 
-export default MemberSelector
+export default forwardRef(MemberSelector)

@@ -1,14 +1,25 @@
 import { createContext } from 'react'
-import { Member, Org } from './type'
+import { Member, Org, SearchPamas } from './type'
 
 interface SelectedMemberContext {
-  members: Member[]
-  checkedMembersChange?: (org: Org) => void
-  clearSelect: () => void
-  selectedOrgChange: (org: Org) => void
-  checkedOrgsChange?: (orgs: Org[]) => void
-  selectedOrg?: Org
-  checkedOrgs?: Org[]
+  initMembers?: Member[] // 已选择的成员
+  members: Member[] // 新选择的成员
+  checkedMembersChange?: (orgs: Member[]) => void // 用户成员选择变更
+  clearSelect: () => void // 清空新选择的成员
+  selectedOrgChange: (org: Org) => void // 点击机构回调
+  checkedOrgsChange?: (orgs: Org[]) => void //机构成员选择变更
+  selectedOrg?: Org // 点击选择的机构
+  checkedOrgs?: Org[] // 先选择的机构成员
+  // 获取部门接口
+  fetchOrgs?: any
+  // 获取用户接口
+  fetchUsers?: any
+  // 查询部门接口
+  fetchSearchOrgs?: any
+  // 查询用户接口
+  fetchSearchUsers?: any
+  // 查询参数
+  searchPamas?: SearchPamas
 }
 
 export const SelectedMemberContext = createContext<SelectedMemberContext>({

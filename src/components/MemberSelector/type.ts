@@ -14,6 +14,7 @@ export interface Org {
   id: string
   title: string
   key: string
+  membertType?: string | number
 }
 
 export enum SEARCH_MEMBER_TYPE {
@@ -25,3 +26,5 @@ export interface SearchPamas {
   searchType: string
   searchVal: string
 }
+
+export type IMember = Member & Org

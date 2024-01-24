@@ -1,21 +1,34 @@
 import { Modal } from 'antd'
-import React, { FC } from 'react'
+import React, { FC, useRef } from 'react'
 import MemberSelect from './components/MemberSelector'
-import { Member } from './type'
+import { IMember as Member } from './type'
 
 interface MemberSelector {
   title: string
-  onOk?: any // 确认回调
-  getMemberFetch?: any // 获取成员
-  getOrgFetch?: any // 获取组织架构
-  initMembers: Member[]
+  open: boolean
+  onSubmit: (data: Member[]) => void //提交
+  onCancel: () => void
+  initMembers: Member[] // 已经选择的成员
+  // 获取部门接口
+  fetchOrgs?: any
+  // 获取用户接口
+  fetchUsers?: any
+  // 查询部门接口
+  fetchSearchOrgs?: any
+  // 查询用户接口
+  fetchSearchUsers?: any
 }
 
 const MemberSelector: FC<MemberSelector> = (props) => {
-  const { title, initMembers = [] } = props
+  const { title, open, onSubmit, onCancel, ...rest } = props
+  const memberRef = useRef<{ allSelectedMember: any }>()
+  const onOk = () => {
+    let data = memberRef.current?.allSelectedMember
+    onSubmit(data)
+  }
   return (
-    <Modal title={title} open={true} width={1200}>
-      <MemberSelect initMembers={initMembers} />
+    <Modal title={title} open={open} width={1200} onOk={onOk} onCancel={onCancel} destroyOnClose>
+      <MemberSelect ref={memberRef} {...rest} />
     </Modal>
   )
 }

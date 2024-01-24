@@ -1,10 +1,13 @@
 import React, { FC, useContext, useMemo } from 'react'
 import { SelectedMemberContext } from '../../context'
+import { IMember } from '../../type'
 import Tag from '../MemberTags/Tag'
 import './index.less'
 
-interface SelectedMemberList {}
-const SelectedMemberList: FC<SelectedMemberList> = () => {
+interface SelectedMemberList {
+  onDel: (data: IMember) => void
+}
+const SelectedMemberList: FC<SelectedMemberList> = ({ onDel }) => {
   const selectedMemberContext = useContext(SelectedMemberContext)
   const allMerber: any = useMemo(() => {
     let checked = selectedMemberContext?.checkedOrgs?.map((v) => ({ ...v, membertType: 1 })) || []
@@ -26,7 +29,7 @@ const SelectedMemberList: FC<SelectedMemberList> = () => {
       </div>
       <div className="member-tags">
         {allMerber.map((member) => {
-          return <Tag member={member} key={member.id} />
+          return <Tag member={member} key={member.id} isDel={true} onDel={onDel} />
         })}
       </div>
     </div>

@@ -2,7 +2,7 @@ import type { TableColumnsType } from 'antd'
 import { Table } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
-import { Member, Org } from '../../type'
+import { Member, Org, SEARCH_MEMBER_TYPE } from '../../type'
 import './index.less'
 
 type DataType = Member
@@ -14,34 +14,22 @@ interface MemberTable {}
 
 const SearchMemberTable: React.FC<MemberTable> = (props) => {
   const selectedMemberContext = useContext(SelectedMemberContext)
+  const { fetchSearchOrgs, fetchSearchUsers, initMembers, searchPamas } = selectedMemberContext
   const [loading, setLoading] = useState(false)
   const [dataSource, setDataSource] = useState<Member[]>([])
-
-  useEffect(() => {
-    setLoading(true)
+  const getData = async () => {
+    let fun =
+      searchPamas?.searchType === SEARCH_MEMBER_TYPE.USER ? fetchSearchUsers : fetchSearchOrgs
+    const data: DataType[] = await fun(searchPamas?.searchVal)
     setTimeout(() => {
-      const data: DataType[] = [
-        {
-          id: '1',
-          name: 'John Brown'
-        },
-        {
-          id: '2',
-          name: 'Jim Green'
-        },
-        {
-          id: '10',
-          name: 'Joe Black'
-        },
-        {
-          id: '20',
-          name: 'Disabled User'
-        }
-      ]
-      setDataSource(data)
+      setDataSource(data || [])
       setLoading(false)
     }, 1000)
-  }, [selectedMemberContext.selectedOrg])
+  }
+  useEffect(() => {
+    setLoading(true)
+    getData()
+  }, [searchPamas])
 
   const allSelectedMember = useMemo(() => {
     return [
@@ -59,7 +47,10 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
           <div>
             <a>{text}</a>
           </div>
-          <div className="text-desc">描述：xxxxx</div>
+
+          <div className="text-desc">
+            {searchPamas?.searchType === SEARCH_MEMBER_TYPE.USER ? '机构：xxx' : '描述：xxxxx'}
+          </div>
         </div>
       )
     }
@@ -82,8 +73,8 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
       selectedMemberContext.checkedMembersChange?.(allCheckedMember as any)
     },
     getCheckboxProps: (record: DataType) => ({
-      // disabled: record.name === 'Disabled User',
-      name: record.name
+      disabled: !!initMembers?.find((v) => v.id === record.id),
+      id: record.id
     })
   }
 

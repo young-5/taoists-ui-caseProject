@@ -1,8 +1,8 @@
 import type { TableColumnsType } from 'antd'
 import { Table } from 'antd'
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
-import { Member } from '../../type'
+import { IMember as Member } from '../../type'
 
 type DataType = Member
 
@@ -14,41 +14,23 @@ const MemberTable: React.FC<MemberTable> = (props) => {
   const { changeChecked } = props
 
   const selectedMemberContext = useContext(SelectedMemberContext)
+  const { fetchUsers, selectedOrg, members, initMembers } = selectedMemberContext
   const [loading, setLoading] = useState(false)
   const [dataSource, setDataSource] = useState<Member[]>([])
-
+  const getUsers = async (id?: string) => {
+    const orgId = id || selectedOrg?.key || ''
+    let data = await fetchUsers(orgId)
+    setDataSource(data)
+    setLoading(false)
+  }
   useEffect(() => {
     setLoading(true)
-    setTimeout(() => {
-      const id = selectedMemberContext.selectedOrg?.key || ''
-      const data: DataType[] = [
-        {
-          id: '1',
-          name: 'John Brown'
-        },
-        {
-          id: '2',
-          name: 'Jim Green'
-        },
-        {
-          id: '3',
-          name: 'Joe Black'
-        },
-        {
-          id: '4',
-          name: 'Disabled User'
-        }
-      ].map((v) => {
-        return { id: v.id + id, name: v.name + id }
-      })
-      id && setDataSource(data)
-      setLoading(false)
-    }, 1000)
-  }, [selectedMemberContext.selectedOrg])
+    getUsers()
+  }, [selectedOrg])
 
   const columns: TableColumnsType<DataType> = [
     {
-      title: `${selectedMemberContext.selectedOrg?.title || ''}`,
+      title: `${selectedOrg?.title || ''}`,
       dataIndex: 'name',
       render: (text: string) => <a>{text}</a>
     }
@@ -56,7 +38,8 @@ const MemberTable: React.FC<MemberTable> = (props) => {
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
-      const prveCheckedMember = selectedMemberContext.members.filter((v) => {
+      // 不影响当前页数据之外的数据的选择中 处理
+      const prveCheckedMember = members.filter((v) => {
         if (
           !dataSource.find((m) => m.id === v.id) ||
           (dataSource.find((m) => m.id === v.id) && selectedRowKeys.find((m) => m === v.id))
@@ -64,21 +47,20 @@ const MemberTable: React.FC<MemberTable> = (props) => {
           return true
         }
       })
-      const newCheckedMember = selectedRows.filter(
-        (v) => !selectedMemberContext.members.find((m) => m.id === v.id)
-      )
+      const newCheckedMember = selectedRows.filter((v) => !members.find((m) => m.id === v.id))
       const allCheckedMember = [...prveCheckedMember, ...newCheckedMember]
       changeChecked(allCheckedMember as unknown as Member[])
     },
     getCheckboxProps: (record: DataType) => ({
-      disabled: record.name === 'Disabled User',
-      name: record.name
+      // 已有成员不得更改选择
+      disabled: !!initMembers?.find((v: any) => v.id === record.id),
+      id: record.id
     })
   }
 
   let rowKeys = useMemo(() => {
-    return selectedMemberContext.members.map((member: Member) => member.id)
-  }, [selectedMemberContext.members])
+    return members.map((member: Member) => member.id)
+  }, [members])
   return (
     <Table
       loading={loading}
