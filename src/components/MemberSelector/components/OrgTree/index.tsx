@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
 import { Org } from '../../type'
 import './index.less'
+import { deepClone, editTreeNode, editTreeNodeFields } from './treeHandle'
 
 interface DataNode {
   title: string
@@ -32,18 +33,20 @@ const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]):
 
 interface OrgTree {
   isCheck?: boolean
+  checkStrictly?: boolean
 }
 const OrgTree: React.FC<OrgTree> = (props) => {
-  const { isCheck = false } = props
-  const [treeData, setTreeData] = useState()
-  const [checkedChildren, setCheckedChildren] = useState<Org[]>([])
+  const { isCheck = false, checkStrictly = true } = props
+  const [treeData, setTreeData] = useState<any>()
+  const [checkedChildren, setCheckedChildren] = useState<any>([])
   const treeMap = useRef<Record<string, Org[]>>({})
   const selectedMemberContext = useContext(SelectedMemberContext)
-  const { selectedOrg, checkedOrgs, fetchOrgs, initMembers } = selectedMemberContext
+  const { selectedOrg, checkedOrgs, fetchOrgs, initMembers, searchPamas } = selectedMemberContext
   const getOrgs = async (id?: string) => {
     const data = await fetchOrgs(id)
     return data || []
   }
+  // 初始化数据获取
   const initFetch = async () => {
     await getOrgs().then((res: any) => {
       let initTreeData = res.map((v) => {
@@ -58,28 +61,55 @@ const OrgTree: React.FC<OrgTree> = (props) => {
   useEffect(() => {
     initFetch()
   }, [])
-  const onLoadData = ({ key, children }: any) =>
+  // tree 子节点 数据获取
+  const onLoadData = ({ key, pid, children }: any) =>
     new Promise<void>(async (resolve) => {
       if (children) {
         resolve()
         return
       }
-      // 已有成员 不可选择
       getOrgs?.(key).then((res: any) => {
         // 缓存  父 子 节点映射
         treeMap.current[key] = res
+
+        let newChildrenChecked: any = checkedChildren || {}
+        // 已有成员 子节点虚拟选中且不可操作(可能是 已选节点的孙节点 不在 initMember中)
+        if (initMembers?.find((el: any) => el.id === key)) {
+          newChildrenChecked[key] = res
+        }
+        // 父节点被选中 子节点虚拟选中且不可操作
+        if (checkedOrgs?.find((el) => el.key === key)) {
+          newChildrenChecked[key] = res
+        }
+        // 孙节点处理
+        if (res.length > 0) {
+          if (checkedChildren[pid]) {
+            newChildrenChecked[key] = res
+          }
+        }
+
+        // tree 不可操作设置
         let result = res.map((v) => {
-          if (initMembers?.find((m) => v.key === m.id || v.pid === m.id)) {
+          // 已有成员  父 子 不可操作
+          if (
+            initMembers?.find((m) => v.key === m.id || v.pid === m.id) ||
+            checkedChildren[v.pid]
+          ) {
             // 如果父级被选中，子节点默认选中
+            return { ...v, disableCheckbox: true }
+          } else if (checkedOrgs?.find((el) => el.key === key)) {
+            // 父节点选中 不可操作
             return { ...v, disableCheckbox: true }
           }
           return v
         })
+        setCheckedChildren({ ...newChildrenChecked })
         setTreeData((origin) => updateTreeData(origin, key, result))
         resolve()
       })
     })
 
+  // 父子节点关联
   const treeCheckedChange = (rows: any) => {
     // 选中父节点 ，子节点默认选中 （虚拟选中）
     let newChildren: Org[] = checkedChildren
@@ -98,35 +128,110 @@ const OrgTree: React.FC<OrgTree> = (props) => {
     )
     selectedMemberContext.checkedOrgsChange?.(checkedData)
   }
+  // tree默认的父子节点关联已关闭
+  const checkStrictlyCheckedChange = (rows) => {
+    // 判断父节点 选中 是否包含子节点
+    // 是 则子节点虚拟选中且不可操作
+    // 否 则 父 子节点相互独立
+    // 是否可点击 以及 是否包含子节点属性 记录在 treeData中
+    // 子节点选中 包含着 checkedChildren中
+    const { checked, node } = rows
+    const currentNode = {
+      //d点击的node节点
+      title: node.title,
+      checked: node.checked,
+      key: node.key,
+      pid: node.pid || ''
+    }
+    let newTreeData = deepClone(treeData)
+    let newChildrenChecked = {}
+    let newCheckedOrg: any[] = checkedOrgs || []
+    if (checked) {
+      newCheckedOrg?.push(currentNode)
+      // 选中
+      editTreeNode({
+        node: currentNode,
+        treeData: newTreeData,
+        editField: { key: 'disableCheckbox', value: true },
+        childrenChecked: newChildrenChecked
+      })
+    } else {
+      newCheckedOrg = newCheckedOrg.filter((v) => v.key !== currentNode.key)
+      // 取消
+      editTreeNode({
+        node: currentNode,
+        treeData: newTreeData,
+        editField: { key: 'disableCheckbox', value: null },
+        childrenChecked: newChildrenChecked,
+        isDel: true
+      })
+    }
+    // 更新 tree (disableCheckbox)
+    setTreeData(newTreeData)
+    // 更新虚拟的选择组织
+    setCheckedChildren(newChildrenChecked)
+    // 更新 选择的组织
+    selectedMemberContext.checkedOrgsChange?.(newCheckedOrg)
+  }
   const selectedKeys = useMemo(() => {
     return [selectedOrg?.key]
   }, [selectedOrg])
+
+  // 选中数据 新选 虚拟选中 已选
   const checkedKeys = useMemo(() => {
     const newChecked = checkedOrgs?.map((v) => v.key) || [] // 新
     const prveChecked = initMembers?.map((v) => v.id) || [] // 已选
-    let _checkedChildren: any = checkedChildren // 内部变价 记录的 子节点虚拟选中
-    //外部选中变化 子节点选中处理
-    if (!checkedOrgs?.length) {
-      //清空
-      setCheckedChildren([])
-      _checkedChildren = []
-    } else {
-      // 可能是外部
-      _checkedChildren = _checkedChildren.filter((v) => newChecked.includes(v.pid))
+    let _checkedChildren: any = []
+    if (!Array.isArray(checkedChildren)) {
+      Object.keys(checkedChildren).forEach((el) => {
+        let ids = checkedChildren[el]
+        _checkedChildren = _checkedChildren.concat(ids)
+      }) // 内部变价 记录的 子节点虚拟选中 key : object
     }
-
     _checkedChildren = _checkedChildren?.map((v) => v.key)
-
     return [...newChecked, ...prveChecked, ..._checkedChildren]
-  }, [checkedOrgs, initMembers])
+  }, [checkedOrgs, initMembers, checkedChildren, searchPamas])
+
+  const changeTreeData = () => {
+    //更新已选的 保留已有的
+    // 更新选中
+    Object.keys(checkedChildren).forEach((el) => {
+      if (!initMembers?.find((v) => v.id === el) && !checkedOrgs?.find((v) => v.key === el)) {
+        delete checkedChildren[el]
+        // 更新 tree 可 checked
+        editTreeNodeFields({
+          treeData,
+          el: { key: el },
+          editField: { key: 'disableCheckbox', value: false },
+          nodeId: 'key'
+        })
+      }
+    })
+    setTreeData([...(treeData || [])])
+    setCheckedChildren({ ...checkedChildren })
+  }
+
+  useEffect(() => {
+    // 外部更新部门  tree更新
+    changeTreeData()
+  }, [checkedOrgs])
+
+  // 是否包含字节点切换
+  const onChangeConatinSubOrg = (node: any) => {}
 
   const titleRender = (nodeData: any) => {
+    const isShow = nodeData.key === selectedOrg?.key
     return (
       <div className="org-tree-title">
         <span>{nodeData.title}</span>
         <Tooltip title="默认包含子机构，可点击切换">
-          <span className="icon" >
-            <ApartmentOutlined />
+          <span className={isShow ? 'icon icon-show' : 'icon'}>
+            <ApartmentOutlined
+              onClick={(e) => {
+                e.stopPropagation()
+                onChangeConatinSubOrg(nodeData)
+              }}
+            />
           </span>
         </Tooltip>
       </div>
@@ -144,8 +249,9 @@ const OrgTree: React.FC<OrgTree> = (props) => {
       onSelect={(_, selectedKeys: any) => {
         selectedMemberContext.selectedOrgChange?.(selectedKeys?.selectedNodes[0])
       }}
+      checkStrictly={checkStrictly}
       onCheck={(_, rows: any) => {
-        treeCheckedChange(rows)
+        checkStrictly ? checkStrictlyCheckedChange(rows) : treeCheckedChange(rows)
       }}
       checkable={isCheck}
     />
