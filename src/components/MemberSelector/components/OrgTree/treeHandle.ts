@@ -22,12 +22,9 @@ export const deepClone = function (obj, hash = new Map()) {
   return cloneObj
 }
 
-// tree拍平
-const TreeToArray = () => {}
-
 // 找到节点
 export const findNode = (node, treeData, key = 'key') => {
-  for (let i = 0; i < treeData.length; i++) {
+  for (let i = 0; i < treeData?.length; i++) {
     if (treeData[i][key] === node[key]) {
       return treeData[i]
     } else {
@@ -40,8 +37,9 @@ export const findNode = (node, treeData, key = 'key') => {
     }
   }
 }
+
 /**
- * //记录音色
+ * //记录父子映射  修改属性
  * @param currentNode 节点
  * @param isContainChildren 是否修改 子孙n+1节点
  * @param childrenChecked 记录父子节点映射
@@ -67,14 +65,19 @@ export const editNodes = ({
         }
       } else {
         // 记录子节点虚拟选中
-        if (childrenChecked[id]) {
-          childrenChecked[id].push(el)
-        } else {
-          childrenChecked[id] = [el]
+        // 如果 isNoContainSub true 则 父 子 节点无关联,不选择中
+        if (!currentNode.isNoContainSub) {
+          if (childrenChecked[id]) {
+            childrenChecked[id].push(el)
+          } else {
+            childrenChecked[id] = [el]
+          }
         }
       }
-      el[key] = value
-      if (isContainChildren && el.children) {
+      if (!currentNode.isNoContainSub) {
+        el[key] = value
+      }
+      if (isContainChildren && el.children?.length) {
         return editNodes({
           currentNode: el,
           isContainChildren,
@@ -91,6 +94,7 @@ export const editNodes = ({
   return currentNode
 }
 
+// 修改属性入口
 export const editTreeNode = ({
   node,
   treeData,
@@ -104,7 +108,7 @@ export const editTreeNode = ({
     node.forEach((el) => {
       let currentNode = findNode(el, treeData, key)
       // 修改子孙节点的 disable属性，同时copy所有的子孙节点
-      currentNode = editNodes({
+      editNodes({
         currentNode,
         editField,
         childrenChecked,
@@ -114,7 +118,7 @@ export const editTreeNode = ({
   } else {
     let currentNode = findNode(node, treeData, key)
     // 修改子孙节点的 disable属性，同时copy所有的子孙节点
-    currentNode = editNodes({
+    editNodes({
       currentNode,
       editField,
       childrenChecked,
@@ -123,16 +127,34 @@ export const editTreeNode = ({
   }
 }
 
-export const editTreeNodeFields = ({ treeData, el, editField, nodeId }: any) => {
-  const { key, value } = editField
+/**
+ * 修改属性
+ * @param param0
+ */
+
+export const editTreeNodeFields = ({ treeData, el, editField, nodeId = 'key' }: any) => {
+  let obj = {}
+  if (Array.isArray(editField)) {
+    editField.forEach((v) => {
+      const { key, value } = v
+      obj[key] = value
+    })
+  } else {
+    const { key, value } = editField
+    obj[key] = value
+  }
+
   let currentNode = findNode(el, treeData, nodeId)
   function editChildren(el) {
     el?.forEach((v: any) => {
-      v[key] = value
+      Object.keys(obj).map((k) => {
+        v[k] = obj[k]
+      })
       if (v.children?.length > 0) {
         editChildren(v.children)
       }
     })
   }
-  currentNode.children?.length && editChildren(currentNode.children)
+  currentNode?.children?.length && editChildren(currentNode.children)
+  console.log('tree', treeData)
 }

@@ -16,6 +16,7 @@ export interface Org {
   key: string
   membertType?: string | number
   pid: string
+  isNoContainSub?: boolean
 }
 
 export enum SEARCH_MEMBER_TYPE {

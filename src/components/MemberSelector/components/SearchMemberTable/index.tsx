@@ -34,7 +34,12 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
   }, [searchPamas])
 
   const allSelectedMember = useMemo(() => {
-    return [...members.map((member: Member) => member[id])]
+    const selectMembers = members.map((member: Member) => member[id]) || []
+    const initMemberIds =
+      initMembers
+        ?.filter((v: any) => (isUser ? !v.membertType : v.membertType))
+        .map((member: any) => member.id) || []
+    return [...selectMembers, ...initMemberIds]
   }, [members])
 
   const columns: TableColumnsType<DataType> = [
@@ -57,14 +62,11 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
 
       const prveCheckedMember = members.filter((v) => {
-        if (
-          !dataSource.find((m) => m[id] === v[id]) ||
-          (dataSource.find((m) => m[id] === v[id]) && selectedRowKeys.find((m) => m === v[id]))
-        ) {
+        if (!dataSource.find((m) => m[id] === v[id])) {
           return true
         }
       })
-      const newCheckedMember = selectedRows.filter((v) => !members.find((m) => m[id] === v[id]))
+      const newCheckedMember = selectedRows.filter((v) => !initMembers?.find((m) => m.id === v[id]))
       const allCheckedMember = [...prveCheckedMember, ...newCheckedMember]
       isUser
         ? selectedMemberContext.checkedMembersChange?.(allCheckedMember as any)

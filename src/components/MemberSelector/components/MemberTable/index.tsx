@@ -40,14 +40,12 @@ const MemberTable: React.FC<MemberTable> = (props) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
       // 不影响当前页数据之外的数据的选择中 处理
       const prveCheckedMember = members.filter((v) => {
-        if (
-          !dataSource.find((m) => m.id === v.id) ||
-          (dataSource.find((m) => m.id === v.id) && selectedRowKeys.find((m) => m === v.id))
-        ) {
+        if (!dataSource.find((m) => m.id === v.id)) {
           return true
         }
       })
-      const newCheckedMember = selectedRows.filter((v) => !members.find((m) => m.id === v.id))
+      //当前页数据   排除 已选
+      const newCheckedMember = selectedRows.filter((v) => !initMembers?.find((m) => m.id === v.id))
       const allCheckedMember = [...prveCheckedMember, ...newCheckedMember]
       changeChecked(allCheckedMember as unknown as Member[])
     },
@@ -59,7 +57,10 @@ const MemberTable: React.FC<MemberTable> = (props) => {
   }
 
   let rowKeys = useMemo(() => {
-    return members.map((member: Member) => member.id)
+    const selectMembers = members.map((member: Member) => member.id) || []
+    const initMemberIds =
+      initMembers?.filter((v: any) => !v.membertType).map((member: any) => member.id) || []
+    return [...selectMembers, ...initMemberIds]
   }, [members])
   return (
     <Table

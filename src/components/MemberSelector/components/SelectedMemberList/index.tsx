@@ -9,11 +9,24 @@ interface SelectedMemberList {
 }
 const SelectedMemberList: FC<SelectedMemberList> = ({ onDel }) => {
   const selectedMemberContext = useContext(SelectedMemberContext)
+  const { checkedOrgs, members, checkedOrgsChange } = selectedMemberContext || {}
   const allMerber: any = useMemo(() => {
-    let checked = selectedMemberContext?.checkedOrgs?.map((v) => ({ ...v, membertType: 1 })) || []
-    return [...checked, ...selectedMemberContext.members]
-  }, [selectedMemberContext.members, selectedMemberContext.checkedOrgs])
+    let checked = checkedOrgs?.map((v) => ({ ...v, membertType: 1 })) || []
+    return [...checked, ...members]
+  }, [members, checkedOrgs])
 
+  const onEdit = (node: any, isNoContainSub: boolean) => {
+    let _checkedOrgs: any[] =
+      checkedOrgs?.map((v) => {
+        if (v.key === node.key) {
+          v.isNoContainSub = isNoContainSub
+          return v
+        } else {
+          return v
+        }
+      }) || []
+    checkedOrgsChange?.([..._checkedOrgs])
+  }
   return (
     <div className="selected-member-container">
       <div className="tags-hearder">
@@ -29,7 +42,16 @@ const SelectedMemberList: FC<SelectedMemberList> = ({ onDel }) => {
       </div>
       <div className="member-tags">
         {allMerber.map((member) => {
-          return <Tag member={member} key={member.id} isDel={true} onDel={onDel} isEdit={true} />
+          return (
+            <Tag
+              member={member}
+              key={member.id}
+              isDel={true}
+              onDel={onDel}
+              onEdit={onEdit}
+              isEdit={true}
+            />
+          )
         })}
       </div>
     </div>

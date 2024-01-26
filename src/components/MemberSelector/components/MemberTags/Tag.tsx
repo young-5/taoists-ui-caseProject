@@ -1,4 +1,4 @@
-import { ApartmentOutlined } from '@ant-design/icons'
+import { ApartmentOutlined, CompressOutlined } from '@ant-design/icons'
 import { Tooltip } from 'antd'
 import React from 'react'
 import { IMember as Member } from '../../type'
@@ -9,10 +9,11 @@ interface MemberTag {
   isDel?: boolean
   onDel?: (data: Member) => void
   isEdit?: boolean
+  onEdit?: any
 }
 // 支持 成员 部门显示
 const MemberTag = (props: MemberTag) => {
-  const { member, onDel, isDel = false, isEdit = false } = props
+  const { member, onDel, isDel = false, isEdit = false, onEdit } = props
   const renderDel = () => {
     return isDel ? (
       <span
@@ -34,8 +35,13 @@ const MemberTag = (props: MemberTag) => {
             <span className="span">{member.name || member.title}</span>
             {isEdit && (
               <Tooltip title="默认包含子机构，可点击切换">
-                <span className="icon">
-                  <ApartmentOutlined />
+                <span
+                  className="icon"
+                  onClick={() => {
+                    onEdit?.(member, !member.isNoContainSub)
+                  }}
+                >
+                  {member.isNoContainSub ? <CompressOutlined /> : <ApartmentOutlined />}
                 </span>
               </Tooltip>
             )}
