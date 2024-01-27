@@ -2,7 +2,7 @@ import type { TableColumnsType } from 'antd'
 import { Table } from 'antd'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
-import { IMember as Member } from '../../type'
+import { Member } from '../../type'
 
 type DataType = Member
 
@@ -19,7 +19,7 @@ const MemberTable: React.FC<MemberTable> = (props) => {
   const [dataSource, setDataSource] = useState<Member[]>([])
   const getUsers = async (id?: string) => {
     const orgId = id || selectedOrg?.key || ''
-    let data = await fetchUsers(orgId)
+    const data = await fetchUsers?.(orgId)
     setDataSource(data)
     setLoading(false)
   }
@@ -51,7 +51,7 @@ const MemberTable: React.FC<MemberTable> = (props) => {
     },
     getCheckboxProps: (record: DataType) => ({
       // 已有成员不得更改选择
-      disabled: !!initMembers?.find((v: any) => v.id === record.id),
+      disabled: !!initMembers?.find((v: Member) => v.id === record.id),
       id: record.id
     })
   }
@@ -59,7 +59,7 @@ const MemberTable: React.FC<MemberTable> = (props) => {
   let rowKeys = useMemo(() => {
     const selectMembers = members.map((member: Member) => member.id) || []
     const initMemberIds =
-      initMembers?.filter((v: any) => !v.membertType).map((member: any) => member.id) || []
+      initMembers?.filter((v: Member) => !v.membertType).map((member: Member) => member.id) || []
     return [...selectMembers, ...initMemberIds]
   }, [members])
   return (

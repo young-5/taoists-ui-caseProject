@@ -1,6 +1,6 @@
 import React, { FC, useContext, useMemo } from 'react'
 import { SelectedMemberContext } from '../../context'
-import { IMember } from '../../type'
+import { IMember, Org } from '../../type'
 import Tag from '../MemberTags/Tag'
 import './index.less'
 
@@ -10,13 +10,13 @@ interface SelectedMemberList {
 const SelectedMemberList: FC<SelectedMemberList> = ({ onDel }) => {
   const selectedMemberContext = useContext(SelectedMemberContext)
   const { checkedOrgs, members, checkedOrgsChange } = selectedMemberContext || {}
-  const allMerber: any = useMemo(() => {
+  const allMerber: IMember[] = useMemo(() => {
     let checked = checkedOrgs?.map((v) => ({ ...v, membertType: 1 })) || []
     return [...checked, ...members]
   }, [members, checkedOrgs])
 
-  const onEdit = (node: any, isNoContainSub: boolean) => {
-    let _checkedOrgs: any[] =
+  const onEdit = (node: Org, isNoContainSub: boolean) => {
+    let _checkedOrgs: Org[] =
       checkedOrgs?.map((v) => {
         if (v.key === node.key) {
           v.isNoContainSub = isNoContainSub
@@ -42,10 +42,16 @@ const SelectedMemberList: FC<SelectedMemberList> = ({ onDel }) => {
       </div>
       <div className="member-tags">
         {allMerber.map((member) => {
+          let key = ''
+          if ('id' in member) {
+            key = member.id
+          } else {
+            key = member.key
+          }
           return (
             <Tag
               member={member}
-              key={member.id}
+              key={key}
               isDel={true}
               onDel={onDel}
               onEdit={onEdit}

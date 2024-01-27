@@ -45,6 +45,8 @@ export const findNode = (node, treeData, key = 'key') => {
  * @param childrenChecked 记录父子节点映射
  * @param editField 修改字段
  * @param nodeId id字段
+ * @param ingnoreContainerSub
+ *
  */
 export const editNodes = ({
   currentNode,
@@ -52,7 +54,8 @@ export const editNodes = ({
   editField,
   childrenChecked,
   nodeId = 'key',
-  isDel = false
+  isDel = false,
+  ingnoreContainerSub
 }) => {
   const { key, value } = editField
   const id = currentNode[nodeId]
@@ -66,7 +69,8 @@ export const editNodes = ({
       } else {
         // 记录子节点虚拟选中
         // 如果 isNoContainSub true 则 父 子 节点无关联,不选择中
-        if (!currentNode.isNoContainSub) {
+        // 如果 点击节点是联动  子孙节点忽略 TDDO
+        if (!currentNode.isNoContainSub || ingnoreContainerSub) {
           if (childrenChecked[id]) {
             childrenChecked[id].push(el)
           } else {
@@ -74,7 +78,7 @@ export const editNodes = ({
           }
         }
       }
-      if (!currentNode.isNoContainSub) {
+      if (!currentNode.isNoContainSub || ingnoreContainerSub) {
         el[key] = value
       }
       if (isContainChildren && el.children?.length) {
@@ -84,7 +88,8 @@ export const editNodes = ({
           editField,
           childrenChecked,
           nodeId,
-          isDel
+          isDel,
+          ingnoreContainerSub
         })
       } else {
         return el
@@ -100,7 +105,8 @@ export const editTreeNode = ({
   treeData,
   editField,
   childrenChecked,
-  isDel = false
+  isDel = false,
+  ingnoreContainerSub
 }: any) => {
   let key = 'key'
   // 找到节点，对节点及其子孙节点进行编辑，copy出子孙节点
@@ -112,7 +118,8 @@ export const editTreeNode = ({
         currentNode,
         editField,
         childrenChecked,
-        isDel
+        isDel,
+        ingnoreContainerSub
       })
     })
   } else {
@@ -122,7 +129,8 @@ export const editTreeNode = ({
       currentNode,
       editField,
       childrenChecked,
-      isDel
+      isDel,
+      ingnoreContainerSub
     })
   }
 }
@@ -156,5 +164,4 @@ export const editTreeNodeFields = ({ treeData, el, editField, nodeId = 'key' }: 
     })
   }
   currentNode?.children?.length && editChildren(currentNode.children)
-  console.log('tree', treeData)
 }

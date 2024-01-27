@@ -1,7 +1,7 @@
 import { Form } from 'antd'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { SelectedMemberContext } from '../../context'
-import { IMember, IMember as Member, Org, SEARCH_MEMBER_TYPE, SearchPamas } from '../../type'
+import { FetchApi, IMember, Member, Org, SEARCH_MEMBER_TYPE, SearchPamas } from '../../type'
 import MemberTable from '../MemberTable'
 import MemberTags from '../MemberTags/index'
 import OrgTree from '../OrgTree'
@@ -14,13 +14,13 @@ interface MemberSelector {
   initMembers: Member[] // 已经选择的成员
   onSubmit?: (data: Member[]) => void //提交
   // 获取部门接口
-  fetchOrgs?: any
+  fetchOrgs?: FetchApi<Org[]>
   // 获取用户接口
-  fetchUsers?: any
+  fetchUsers?: FetchApi<Member[]>
   // 查询部门接口
-  fetchSearchOrgs?: any
+  fetchSearchOrgs?: FetchApi<Org[]>
   // 查询用户接口
-  fetchSearchUsers?: any
+  fetchSearchUsers?: FetchApi<Member[]>
 }
 
 const MemberSelector = (props: MemberSelector, ref) => {
@@ -52,10 +52,10 @@ const MemberSelector = (props: MemberSelector, ref) => {
     setCheckedOrgs(newOrgs)
   }
   const onDel = (member: IMember) => {
-    if (member.membertType === 1) {
+    if ('membertType' in member && member?.membertType === 1) {
       let newMember = checkedOrgs.filter((v) => member.key !== v.key)
       checkedOrgsChange(newMember)
-    } else {
+    } else if ('id' in member) {
       let newMember = selectedMember.filter((v) => member.id !== v.id)
       checkedMembersChange(newMember)
     }

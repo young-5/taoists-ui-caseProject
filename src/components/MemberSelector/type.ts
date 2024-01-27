@@ -8,12 +8,12 @@ export interface Member {
   name: string
   roles?: role[]
   orgId?: string
+  membertType?: string | number
 }
 
 export interface Org {
-  id: string
-  title: string
   key: string
+  title: string
   membertType?: string | number
   pid: string
   isNoContainSub?: boolean
@@ -29,4 +29,12 @@ export interface SearchPamas {
   searchVal: string
 }
 
-export type IMember = Member & Org
+export interface Result<T> {
+  code: number
+  data: Array<T>
+  total?: number
+}
+
+export type FetchApi<T> = (key?: string) => Promise<Result<T>>
+
+export type IMember = Member | Org

@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { Member, Org, SearchPamas } from './type'
+import { FetchApi, Member, Org, SearchPamas } from './type'
 
 interface SelectedMemberContext {
   initMembers?: Member[] // 已选择的成员
@@ -11,13 +11,13 @@ interface SelectedMemberContext {
   selectedOrg?: Org // 点击选择的机构
   checkedOrgs?: Org[] // 先选择的机构成员
   // 获取部门接口
-  fetchOrgs?: any
+  fetchOrgs?: FetchApi<Org[]>
   // 获取用户接口
-  fetchUsers?: any
+  fetchUsers?: FetchApi<Member[]>
   // 查询部门接口
-  fetchSearchOrgs?: any
+  fetchSearchOrgs?: FetchApi<Org[]>
   // 查询用户接口
-  fetchSearchUsers?: any
+  fetchSearchUsers?: FetchApi<Member[]>
   // 查询参数
   searchPamas?: SearchPamas
 }

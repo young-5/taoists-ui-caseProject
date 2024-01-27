@@ -22,7 +22,7 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
   const [dataSource, setDataSource] = useState<Member[]>([])
   const getData = async () => {
     let fun = isUser ? fetchSearchUsers : fetchSearchOrgs
-    const data: DataType[] = await fun(searchPamas?.searchVal)
+    const data: DataType[] = (await fun?.(searchPamas?.searchVal)) || []
     setTimeout(() => {
       setDataSource(data || [])
       setLoading(false)
@@ -44,7 +44,7 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
 
   const columns: TableColumnsType<DataType> = [
     {
-      title: '数据',
+      title: `${isUser ? '成员' : '部门'}数据`,
       dataIndex: isUser ? 'name' : 'title',
       render: (text: string) => (
         <div className="table-text">
@@ -81,7 +81,7 @@ const SearchMemberTable: React.FC<MemberTable> = (props) => {
   return (
     <Table
       loading={loading}
-      rowKey={(row: any) => (isUser ? row.id : row.key)}
+      rowKey={(row: Member) => (isUser ? row.id : row.key)}
       rowSelection={{
         type: 'checkbox',
         selectedRowKeys: allSelectedMember,
